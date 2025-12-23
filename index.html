@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta property="og:title" content="燈籠食堂(屯) - 專用訂貨單">
+    <meta property="og:title" content="燈籠食堂(屯) - 專用電子落單表">
     <meta property="og:description" content="香港宏達有限公司提供">
     
     <title>燈籠食堂(屯) - 專用訂貨單</title>
@@ -21,8 +21,12 @@
         .nav-link { color: #aaa; font-weight: bold; border: none; border-radius: 10px 10px 0 0; padding: 10px 15px; font-size: 1rem; background: transparent; }
         .nav-link.active { background-color: #f8f9fa; color: #000; border-bottom: 4px solid #ffc107; }
         
+        /* 搜尋欄優化 V5.6 */
         .search-section { background-color: #f8f9fa; padding: 10px 15px; border-bottom: 1px solid #ddd; display: none; }
-        .search-input { border-radius: 20px; border: 1px solid #ccc; padding: 8px 15px; width: 100%; }
+        .search-wrapper { position: relative; }
+        .search-input { border-radius: 20px; border: 1px solid #ccc; padding: 8px 35px 8px 15px; width: 100%; } /* 右邊留空給X按鈕 */
+        .btn-clear-search { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #adb5bd; cursor: pointer; font-size: 1.1rem; display: none; z-index: 10; }
+        .btn-clear-search:active { color: #495057; }
 
         .cat-header { background-color: #ffc107; color: #000; font-weight: 800; padding: 8px 15px; margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #e0a800; }
         .product-row { background: white; border-bottom: 1px solid #eee; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
@@ -70,7 +74,7 @@
             <div style="font-size: 0.8rem; color: #ccc;">W4087</div>
         </div>
         <div style="text-align: right; font-size: 0.8rem; color: #ccc;">
-            宏達批發<br>Tel: 63778262
+            宏達批發<br>Tel: 63771688
         </div>
     </div>
     <ul class="nav nav-tabs">
@@ -82,7 +86,10 @@
         </li>
     </ul>
     <div class="search-section" id="searchBar">
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜尋產品 / 編號..." onkeyup="filterAllProducts()">
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜尋產品 / 編號..." onkeyup="filterAllProducts()">
+            <i class="bi bi-x-circle-fill btn-clear-search" id="clearSearchBtn" onclick="clearSearch()"></i>
+        </div>
     </div>
 </div>
 
@@ -91,7 +98,7 @@
 
 <div class="bottom-bar">
     <div class="total-box">
-        共 <span id="totalQty" class="total-num">0</span> 件
+        共 <span id="totalQty" class="total-num">0</span> 款
     </div>
     <button id="viewCartBtn" class="btn-view-cart" onclick="openCartModal()" disabled>
         <i class="bi bi-cart3"></i> 查看已選
@@ -147,12 +154,17 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // === 1. 全局稱重產品清單 (V5.3 標準) ===
-    const weightedProducts = [
-        "D61B", "D61C", "D18A", "D17E", "D17C", "B01"
+    // === 1. 蒲燒鰻魚 5K 規則清單 ===
+    const eelProducts = [
+        "D22J", "D22L", "D22", "D22C", "D22A", "D22D", "D22I", "D22G"
     ];
 
-    // === 2. 客戶常用清單 (燈籠食堂-屯 30項) ===
+    // === 2. 一般稱重產品清單 ===
+    const weightedProducts = [
+        "D61B", "D61C", "D18A", "D17E", "D17C", "B01", "D18"
+    ];
+
+    // === 3. 客戶常用清單 (燈籠食堂-屯) ===
     const frequentCodes = [
         "M008E", "M003BD", "D10ED", "M010A", "D64BA",
         "D65", "C26KB", "D82", "E04EA", "E03K",
@@ -162,7 +174,7 @@
         "D54A", "D80A", "E03F", "D61B", "D58B"
     ];
 
-    // === 3. 完整資料庫 (V4.6) ===
+    // === 4. 完整資料庫 (V5.5) ===
     const fullCatalog = [
         { cat: "環球海膽", items: ["膠盒海膽 (A06F)", "加拿大海膽 (A03)", "澳洲海膽 (A08)", "練海膽醬 (C59)", "凍海膽漿 (D01)", "紫海膽(膠盒) (A07C)", "墨西哥海膽 (A12A)", "墨西哥海膽10格 (A12B)", "本地海膽 (A02)", "凍熟馬糞膽 (A06E)"] },
         { cat: "日本海膽", items: ["A Grade(直排) (AJ1)", "A Grade(亂排) (AJ4)", "B Grade(亂排) (AJ3)", "鹽水海膽 (AJ6)"] },
@@ -226,12 +238,13 @@
         document.getElementById('tab-' + tab).classList.add('active');
         event.target.classList.add('active');
 
-        const searchBar = document.getElementById('searchBar');
+        // V5.6: 切換 Tab 時自動清空搜尋
         if (tab === 'all') {
-            searchBar.style.display = 'block';
+            clearSearch(); // 重置搜索欄
+            document.getElementById('searchBar').style.display = 'block';
             window.scrollTo(0, 0); 
         } else {
-            searchBar.style.display = 'none';
+            document.getElementById('searchBar').style.display = 'none';
         }
     }
 
@@ -254,10 +267,15 @@
         const container = document.getElementById('tab-all');
         let html = '';
         
+        // V5.6 模糊搜尋邏輯
+        const terms = filterText.toUpperCase().split('');
+
         fullCatalog.forEach(category => {
             const filteredItems = category.items.filter(item => {
                 if (!filterText) return true;
-                return item.toUpperCase().includes(filterText.toUpperCase()) || category.cat.includes(filterText);
+                const itemUpper = item.toUpperCase();
+                // 檢查每一個字元是否都存在於產品名稱中
+                return terms.every(term => itemUpper.includes(term));
             });
 
             if (filteredItems.length > 0) {
@@ -294,7 +312,7 @@
         let displayValue = qty;
         let inputClass = 'qty-input';
         if (qty > 0 && cartUnits[code] === 'kg') {
-            displayValue = qty + ' kg';
+            displayValue = qty + ' K'; // V5.4: 顯示 K
             inputClass += ' unit-kg';
         }
 
@@ -312,17 +330,57 @@
         </div>`;
     }
 
+    // V5.6: 搜尋功能 & 清除按鈕
     function filterAllProducts() {
-        const text = document.getElementById('searchInput').value;
+        const input = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        const text = input.value;
+
+        if (text.length > 0) {
+            clearBtn.style.display = 'block';
+        } else {
+            clearBtn.style.display = 'none';
+        }
         renderAll(text);
     }
 
-    // === V5.3 最終邏輯: updateQty & B01 Logic ===
+    function clearSearch() {
+        const input = document.getElementById('searchInput');
+        input.value = '';
+        document.getElementById('clearSearchBtn').style.display = 'none';
+        renderAll('');
+    }
+
+    // === V5.5 UpdateQty Logic ===
     function updateQty(code, delta) {
+        // 1. Eel Logic
+        if (eelProducts.includes(code)) {
+            let step = 5;
+            if (delta > 0 && (!cart[code] || cart[code] === 0)) {
+                cart[code] = 5;
+                cartUnits[code] = 'kg'; 
+            } else {
+                if (!cart[code]) cart[code] = 0;
+                cart[code] += (delta * step);
+            }
+            
+            if (cart[code] <= 0) {
+                delete cart[code];
+                delete cartUnits[code];
+            }
+            
+            updateInputDisplay(code);
+            calculateTotal();
+            if (document.getElementById('cartModal').classList.contains('show')) {
+                 renderCartModalItems();
+            }
+            return; 
+        }
+
+        // 2. Weighted Logic (Modal)
         if (delta > 0 && (!cart[code] || cart[code] === 0) && weightedProducts.includes(code) && !cartUnits[code]) {
             pendingProductCode = code;
             
-            // B01 顯示 "隻"，其他顯示 "件/包"
             const pieceBtn = document.getElementById('btn-unit-piece');
             if (code === 'B01') {
                 pieceBtn.innerHTML = '<i class="bi bi-box-seam"></i> 隻<br>(默認)';
@@ -334,6 +392,7 @@
             return;
         }
 
+        // 3. Standard Logic
         if (!cart[code]) cart[code] = 0;
         cart[code] += delta;
         
@@ -370,7 +429,7 @@
                 input.classList.remove('unit-kg');
             } else {
                 if (unit === 'kg') {
-                    input.value = qty + ' kg';
+                    input.value = qty + ' K'; 
                     input.classList.add('unit-kg');
                 } else {
                     input.value = qty;
@@ -404,10 +463,8 @@
     }
 
     function calculateTotal() {
-        let count = 0;
-        for (let key in cart) {
-            count += cart[key];
-        }
+        // V5.5 Fix: Count lines (keys), not sum of quantities
+        let count = Object.keys(cart).length;
         document.getElementById('totalQty').innerText = count;
 
         const viewBtn = document.getElementById('viewCartBtn');
@@ -451,18 +508,23 @@
 
         const customerCode = "W4087"; 
         const customerName = "燈籠食堂(屯)";
-        const phone = "85263778262"; 
+        const phone = "85263771688"; 
 
         let msg = `${customerCode} ${customerName}\n訂貨單：\n\n`;
 
-        // V5.2: 大寫 K
+        // V5.4 Format: Qty Unit Name (Code)
         const formatLine = (code) => {
-            const name = productMap[code] ? productMap[code].name : code;
-            let qtyStr = cart[code];
+            const product = productMap[code];
+            const name = product ? product.name : code; 
+            let qtyStr = cart[code].toString(); 
+            
             if (cartUnits[code] === 'kg') {
                 qtyStr += 'K'; 
             }
-            return ` ${qtyStr}   ${name}\n`;
+
+            const paddedQty = qtyStr.padEnd(5, ' '); 
+            
+            return ` ${paddedQty} ${name} (${code})\n`;
         };
 
         frequentCodes.forEach(code => {
@@ -485,5 +547,4 @@
 </script>
 
 </body>
-
 </html>
