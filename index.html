@@ -139,10 +139,7 @@
     ];
     let productMap = {}, cart = {}, cartUnits = {}, cartModal = null, unitModal = null, pendingProductCode = null;
     function init() {
-        document.getElementById('displayClientName').innerText = customerName;
-        document.getElementById('displayClientCode').innerText = customerCode;
-        document.title = customerName + " - 專用訂貨單";
-
+        productMap = {}; 
         fullCatalog.forEach(c=>{c.items.forEach(i=>{const m=i.match(/^(.*)\s*\(([A-Za-z0-9]+)\)$/);if(m)productMap[m[2]]={fullName:i,name:m[1],code:m[2]}})});
         loadCart(); renderFrequent(); renderAll();
         cartModal=new bootstrap.Modal(document.getElementById('cartModal')); unitModal=new bootstrap.Modal(document.getElementById('unitSelectionModal'));
