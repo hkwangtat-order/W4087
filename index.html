@@ -5,58 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta property="og:title" content="燈籠食堂(屯) - 專用電子落單表">
     <meta property="og:description" content="香港宏達有限公司提供">
-    
     <title>燈籠食堂(屯) - 專用訂貨單</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    
     <style>
         body { font-family: "Microsoft JhengHei", sans-serif; background-color: #f8f9fa; padding-bottom: 120px; }
-        
         .sticky-header-container { position: sticky; top: 0; z-index: 1020; background-color: #212529; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .top-info { padding: 12px 15px 5px 15px; color: white; }
         .client-name { font-size: 1.3rem; font-weight: 800; color: #ffc107; }
-        
         .nav-tabs { border-bottom: none; padding: 0 10px; }
         .nav-link { color: #aaa; font-weight: bold; border: none; border-radius: 10px 10px 0 0; padding: 10px 15px; font-size: 1rem; background: transparent; }
         .nav-link.active { background-color: #f8f9fa; color: #000; border-bottom: 4px solid #ffc107; }
-        
-        /* 搜尋欄優化 V5.6 */
         .search-section { background-color: #f8f9fa; padding: 10px 15px; border-bottom: 1px solid #ddd; display: none; }
         .search-wrapper { position: relative; }
-        .search-input { border-radius: 20px; border: 1px solid #ccc; padding: 8px 35px 8px 15px; width: 100%; } /* 右邊留空給X按鈕 */
+        .search-input { border-radius: 20px; border: 1px solid #ccc; padding: 8px 35px 8px 15px; width: 100%; }
         .btn-clear-search { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #adb5bd; cursor: pointer; font-size: 1.1rem; display: none; z-index: 10; }
         .btn-clear-search:active { color: #495057; }
-
         .cat-header { background-color: #ffc107; color: #000; font-weight: 800; padding: 8px 15px; margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid #e0a800; }
         .product-row { background: white; border-bottom: 1px solid #eee; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
         .p-info { flex: 1; padding-right: 10px; overflow: hidden; }
         .p-name { font-size: 1.1rem; font-weight: 700; color: #000; line-height: 1.3; margin-bottom: 2px; }
         .p-code { font-size: 0.85rem; color: #888; font-weight: normal; font-family: Arial, sans-serif; }
-        
         .qty-control { display: flex; align-items: center; background: #fff; border: 1px solid #ced4da; border-radius: 8px; width: 120px; justify-content: space-between; height: 38px; flex-shrink: 0; overflow: hidden; }
         .qty-btn { width: 35px; height: 100%; border-radius: 0; background: #f8f9fa; color: #212529; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; font-size: 1.2rem; user-select: none; border: none; }
         .qty-btn:active { background: #ffc107; }
         .qty-input { width: 50px; text-align: center; border: none; font-weight: bold; font-size: 1.1rem; color: #333; background: transparent; padding: 0; }
-        
         .qty-input.unit-kg { color: #d63384; font-size: 1rem; }
-
         .product-row.selected { background-color: #fff9db; border-left: 5px solid #ffc107; }
-
         .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -4px 15px rgba(0,0,0,0.15); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; z-index: 1030; gap: 10px; }
         .total-box { font-size: 1.1rem; font-weight: bold; color: #333; }
         .total-num { color: #d32f2f; font-size: 1.4rem; padding: 0 3px; }
-
         .btn-view-cart { background-color: #6c757d; color: white; border: none; padding: 10px 18px; border-radius: 50px; font-weight: bold; font-size: 0.95rem; white-space: nowrap; transition: all 0.3s ease; }
         .btn-view-cart.active { background: linear-gradient(45deg, #ff9800, #ff5722); box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4); transform: scale(1.05); }
         .btn-whatsapp { background-color: #25D366; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; font-size: 1.1rem; flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
-
         .tab-content { display: none; padding-top: 10px; }
         .tab-content.active { display: block; }
-        
         .modal-header { background-color: #212529; color: white; }
         .modal-title { font-weight: bold; color: #ffc107; }
-        
         .unit-btn-group { display: flex; gap: 15px; justify-content: center; padding: 20px; }
         .btn-unit-select { flex: 1; padding: 15px; border: 2px solid #ddd; border-radius: 10px; background: white; font-weight: bold; font-size: 1.1rem; text-align: center; cursor: pointer; transition: all 0.2s; }
         .btn-unit-select:hover { background-color: #f8f9fa; }
@@ -66,115 +51,62 @@
     </style>
 </head>
 <body>
-
 <div class="sticky-header-container">
     <div class="top-info d-flex justify-content-between align-items-center">
-        <div>
-            <div class="client-name">燈籠食堂(屯)</div>
-            <div style="font-size: 0.8rem; color: #ccc;">W4087</div>
-        </div>
-        <div style="text-align: right; font-size: 0.8rem; color: #ccc;">
-            宏達批發<br>Tel: 63778262
-        </div>
+        <div><div class="client-name">燈籠食堂(屯)</div><div style="font-size: 0.8rem; color: #ccc;">W4087</div></div>
+        <div style="text-align: right; font-size: 0.8rem; color: #ccc;">宏達批發<br>Tel: 63771688</div>
     </div>
     <ul class="nav nav-tabs">
-        <li class="nav-item" style="flex:1; text-align:center;">
-            <button class="nav-link active" style="width:100%" onclick="switchTab('frequent')">🌟 常用清單</button>
-        </li>
-        <li class="nav-item" style="flex:1; text-align:center;">
-            <button class="nav-link" style="width:100%" onclick="switchTab('all')">📋 全部產品</button>
-        </li>
+        <li class="nav-item" style="flex:1; text-align:center;"><button class="nav-link active" style="width:100%" onclick="switchTab('frequent')">🌟 常用清單</button></li>
+        <li class="nav-item" style="flex:1; text-align:center;"><button class="nav-link" style="width:100%" onclick="switchTab('all')">📋 全部產品</button></li>
     </ul>
     <div class="search-section" id="searchBar">
         <div class="search-wrapper">
-            <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜尋產品 / 編號..." onkeyup="filterAllProducts()">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜尋產品 / 編號..." oninput="filterAllProducts()">
             <i class="bi bi-x-circle-fill btn-clear-search" id="clearSearchBtn" onclick="clearSearch()"></i>
         </div>
     </div>
 </div>
-
 <div id="tab-frequent" class="tab-content active"></div>
 <div id="tab-all" class="tab-content"></div>
-
 <div class="bottom-bar">
-    <div class="total-box">
-        共 <span id="totalQty" class="total-num">0</span> 款
-    </div>
-    <button id="viewCartBtn" class="btn-view-cart" onclick="openCartModal()" disabled>
-        <i class="bi bi-cart3"></i> 查看已選
-    </button>
-    <button class="btn-whatsapp" onclick="sendWhatsApp()">
-        <i class="bi bi-whatsapp"></i> 發送訂單
-    </button>
+    <div class="total-box">共 <span id="totalQty" class="total-num">0</span> 款</div>
+    <button id="viewCartBtn" class="btn-view-cart" onclick="openCartModal()" disabled><i class="bi bi-cart3"></i> 查看已選</button>
+    <button class="btn-whatsapp" onclick="sendWhatsApp()"><i class="bi bi-whatsapp"></i> 發送訂單</button>
 </div>
-
 <div class="modal fade" id="unitSelectionModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">請選擇計價單位</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+            <div class="modal-header"><h5 class="modal-title">請選擇計價單位</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button></div>
             <div class="modal-body">
                 <p class="text-center mb-3">此產品支持稱重計價，請確認單位：</p>
                 <div class="unit-btn-group">
-                    <button id="btn-unit-piece" class="btn-unit-select piece" onclick="confirmUnit('piece')">
-                        <i class="bi bi-box-seam"></i>
-                        件 / 包<br>(默認)
-                    </button>
-                    <button class="btn-unit-select kg" onclick="confirmUnit('kg')">
-                        <i class="bi bi-speedometer2"></i>
-                        KG<br>(公斤)
-                    </button>
+                    <button id="btn-unit-piece" class="btn-unit-select piece" onclick="confirmUnit('piece')"><i class="bi bi-box-seam"></i> 件 / 包<br>(默認)</button>
+                    <button class="btn-unit-select kg" onclick="confirmUnit('kg')"><i class="bi bi-speedometer2"></i> KG<br>(公斤)</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="cartModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">已選產品清單</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+            <div class="modal-header"><h5 class="modal-title">已選產品清單</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button></div>
             <div class="modal-body" id="cartModalBody"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-danger me-auto" onclick="clearCart()">
-                    <i class="bi bi-trash"></i> 清空
-                </button>
+                <button type="button" class="btn btn-outline-danger me-auto" onclick="clearCart()"><i class="bi bi-trash"></i> 清空</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">繼續選購</button>
                 <button type="button" class="btn btn-success" onclick="sendWhatsApp()">確認發送</button>
             </div>
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    // === 1. 蒲燒鰻魚 5K 規則清單 ===
-    const eelProducts = [
-        "D22J", "D22L", "D22", "D22C", "D22A", "D22D", "D22I", "D22G"
-    ];
-
-    // === 2. 一般稱重產品清單 ===
-    const weightedProducts = [
-        "D61B", "D61C", "D18A", "D17E", "D17C", "B01", "D18"
-    ];
-
-    // === 3. 客戶常用清單 (燈籠食堂-屯) ===
-    const frequentCodes = [
-        "M008E", "M003BD", "D10ED", "M010A", "D64BA",
-        "D65", "C26KB", "D82", "E04EA", "E03K",
-        "E08", "D53A", "D52A", "D06C", "D39GA",
-        "C87B", "C53F", "C51A", "C38A", "C38",
-        "C24A", "C18E", "H02", "H02A", "D16",
-        "D54A", "D80A", "E03F", "D61B", "D58B"
-    ];
-
-    // === 4. 完整資料庫 (V5.5) ===
+    const customerName = "燈籠食堂(屯)"; const customerCode = "W4087"; 
+    const frequentCodes = ["M008E", "M003BD", "D10ED", "M010A", "D64BA", "D65", "C26KB", "D82", "E04EA", "E03K", "E08", "D53A", "D52A", "D06C", "D39GA", "C87B", "C53F", "C51A", "C38A", "C38", "C24A", "C18E", "H02", "H02A", "D16", "D54A", "D80A", "E03F", "D61B", "D58B"];
+    const eelProducts = ["D22J", "D22L", "D22", "D22C", "D22A", "D22D", "D22I", "D22G"];
+    const weightedProducts = ["D61B", "D61C", "D18A", "D17E", "D17C", "B01", "D18"];
     const fullCatalog = [
         { cat: "環球海膽", items: ["膠盒海膽 (A06F)", "加拿大海膽 (A03)", "澳洲海膽 (A08)", "練海膽醬 (C59)", "凍海膽漿 (D01)", "紫海膽(膠盒) (A07C)", "墨西哥海膽 (A12A)", "墨西哥海膽10格 (A12B)", "本地海膽 (A02)", "凍熟馬糞膽 (A06E)"] },
         { cat: "日本海膽", items: ["A Grade(直排) (AJ1)", "A Grade(亂排) (AJ4)", "B Grade(亂排) (AJ3)", "鹽水海膽 (AJ6)"] },
@@ -205,15 +137,12 @@
         { cat: "漬物", items: ["壽司紅薑 (C27)", "壽司白薑 (C27A)", "牛蒡醬油漬 (C31B)", "薑芽(30本) (C27B)", "海葡萄100g (D81A)", "青雞冠草 (C09)", "泡菜（400g） (C87B)", "大L蘿白 (C31)", "味噌蒜頭漬 (C31C)", "紅雞冠草 (C09A)", "味付筍 (C31D)", "青海草 (C10AA)"] },
         { cat: "伴碟/乾貨/工具", items: ["軍艦紫菜50片 (C18A)", "壽司紫菜50片 (C18C)", "神戶切絲紫菜 (C18E)", "單翼手捲海苔 (C18F)", "日出昆布 (C57)", "碎海草 (C10A)", "海苔粉 (C18G)", "紫菜杯 (C18J)", "日高昆布 (C57A)", "山形膠葉 (C01B)", "櫻花蝦乾500g (C03)", "櫻花蝦乾90g (C03A)", "醫用丁晴手套 S (C50BA)", "醫用丁晴手套 M (C50BB)", "醫用丁晴手套 L (C50BC)", "保鮮綿紙M (C70)", "914保鮮紙 (C914SC)", "912保鮮紙 (C912SC)", "910保鮮紙 (C910SC)", "613錫紙 (C613)", "3寸木皮船 (C04C)", "手套S (C50AA)", "手套M (C50AB)", "天婦羅紙 (C43A)", "木盒 (C07)", "細木盒 (C07A)", "日本JFDA消毒酒精 (C50D)"] }
     ];
-
-    let productMap = {};
-    let cart = {}; 
-    let cartUnits = {}; 
-    let cartModal = null; 
-    let unitModal = null; 
-    let pendingProductCode = null; 
-
+    let productMap = {}, cart = {}, cartUnits = {}, cartModal = null, unitModal = null, pendingProductCode = null;
     function init() {
+        document.getElementById('displayClientName').innerText = customerName;
+        document.getElementById('displayClientCode').innerText = customerCode;
+        document.title = customerName + " - 專用訂貨單";
+
         fullCatalog.forEach(cat => {
             cat.items.forEach(itemStr => {
                 const match = itemStr.match(/^(.*)\s*\(([A-Za-z0-9]+)\)$/);
@@ -225,10 +154,34 @@
             });
         });
 
+        loadCart(); // V6.0 Auto Load
+
         renderFrequent();
         renderAll();
         cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
         unitModal = new bootstrap.Modal(document.getElementById('unitSelectionModal')); 
+    }
+
+    // V6.0 Logic: Load
+    function loadCart() {
+        const savedCart = localStorage.getItem('orderCart_' + customerCode);
+        const savedUnits = localStorage.getItem('orderUnits_' + customerCode);
+        
+        if (savedCart) {
+            try { cart = JSON.parse(savedCart); } catch(e) { console.error("Cart Load Error", e); }
+        }
+        
+        if (savedUnits) {
+            try { cartUnits = JSON.parse(savedUnits); } catch(e) { console.error("Units Load Error", e); }
+        }
+        
+        calculateTotal();
+    }
+
+    // V6.0 Logic: Save
+    function saveCart() {
+        localStorage.setItem('orderCart_' + customerCode, JSON.stringify(cart));
+        localStorage.setItem('orderUnits_' + customerCode, JSON.stringify(cartUnits));
     }
 
     function switchTab(tab) {
@@ -238,13 +191,13 @@
         document.getElementById('tab-' + tab).classList.add('active');
         event.target.classList.add('active');
 
-        // V5.6: 切換 Tab 時自動清空搜尋
+        const searchBar = document.getElementById('searchBar');
         if (tab === 'all') {
-            clearSearch(); // 重置搜索欄
-            document.getElementById('searchBar').style.display = 'block';
+            clearSearch();
+            searchBar.style.display = 'block';
             window.scrollTo(0, 0); 
         } else {
-            document.getElementById('searchBar').style.display = 'none';
+            searchBar.style.display = 'none';
         }
     }
 
@@ -267,14 +220,12 @@
         const container = document.getElementById('tab-all');
         let html = '';
         
-        // V5.6 模糊搜尋邏輯
         const terms = filterText.toUpperCase().split('');
 
         fullCatalog.forEach(category => {
             const filteredItems = category.items.filter(item => {
                 if (!filterText) return true;
                 const itemUpper = item.toUpperCase();
-                // 檢查每一個字元是否都存在於產品名稱中
                 return terms.every(term => itemUpper.includes(term));
             });
 
@@ -312,7 +263,7 @@
         let displayValue = qty;
         let inputClass = 'qty-input';
         if (qty > 0 && cartUnits[code] === 'kg') {
-            displayValue = qty + ' K'; // V5.4: 顯示 K
+            displayValue = qty + ' K'; 
             inputClass += ' unit-kg';
         }
 
@@ -330,7 +281,6 @@
         </div>`;
     }
 
-    // V5.6: 搜尋功能 & 清除按鈕
     function filterAllProducts() {
         const input = document.getElementById('searchInput');
         const clearBtn = document.getElementById('clearSearchBtn');
@@ -351,9 +301,7 @@
         renderAll('');
     }
 
-    // === V5.5 UpdateQty Logic ===
     function updateQty(code, delta) {
-        // 1. Eel Logic
         if (eelProducts.includes(code)) {
             let step = 5;
             if (delta > 0 && (!cart[code] || cart[code] === 0)) {
@@ -371,13 +319,14 @@
             
             updateInputDisplay(code);
             calculateTotal();
+            saveCart(); 
+            
             if (document.getElementById('cartModal').classList.contains('show')) {
                  renderCartModalItems();
             }
             return; 
         }
 
-        // 2. Weighted Logic (Modal)
         if (delta > 0 && (!cart[code] || cart[code] === 0) && weightedProducts.includes(code) && !cartUnits[code]) {
             pendingProductCode = code;
             
@@ -392,7 +341,6 @@
             return;
         }
 
-        // 3. Standard Logic
         if (!cart[code]) cart[code] = 0;
         cart[code] += delta;
         
@@ -403,6 +351,7 @@
         
         updateInputDisplay(code);
         calculateTotal();
+        saveCart(); 
         
         if (document.getElementById('cartModal').classList.contains('show')) {
              renderCartModalItems();
@@ -452,6 +401,9 @@
         cart = {}; 
         cartUnits = {}; 
         
+        localStorage.removeItem('orderCart_' + customerCode);
+        localStorage.removeItem('orderUnits_' + customerCode);
+
         document.querySelectorAll('.qty-input').forEach(input => {
             input.value = 0;
             input.classList.remove('unit-kg');
@@ -463,7 +415,6 @@
     }
 
     function calculateTotal() {
-        // V5.5 Fix: Count lines (keys), not sum of quantities
         let count = Object.keys(cart).length;
         document.getElementById('totalQty').innerText = count;
 
@@ -506,13 +457,8 @@
             return;
         }
 
-        const customerCode = "W4087"; 
-        const customerName = "燈籠食堂(屯)";
-        const phone = "85263778262"; 
-
         let msg = `${customerCode} ${customerName}\n訂貨單：\n\n`;
 
-        // V5.4 Format: Qty Unit Name (Code)
         const formatLine = (code) => {
             const product = productMap[code];
             const name = product ? product.name : code; 
@@ -539,7 +485,7 @@
             }
         }
 
-        const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+        const url = `https://wa.me/85263771688?text=${encodeURIComponent(msg)}`;
         window.open(url, '_blank');
     }
 
@@ -548,4 +494,3 @@
 
 </body>
 </html>
-
